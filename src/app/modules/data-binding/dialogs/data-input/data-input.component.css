@@ -1,0 +1,8 @@
+input[type='file']{
+    display: none;
+}
+.upload-btn{
+    display: block;
+    margin: 20px auto;
+    width: 90%;
+}

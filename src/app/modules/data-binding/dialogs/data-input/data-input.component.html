@@ -1,0 +1,10 @@
+<h1 mat-dialog-title>Data Input <button mat-button color="warn" (click)="deleteNode()">Delete Node</button></h1>
+<div mat-dialog-content>
+    <p>Import CV File</p>
+    <button class='upload-btn' mat-raised-button (click)="uploads.click()">Upload File</button>
+    <input type="file" accept=".csv" #uploads (change)="onChange(uploads.files)" />
+</div>
+<div mat-dialog-actions>
+    <button mat-button (click)="close()">Cancel</button>
+    <button mat-button [mat-dialog-close]="0" cdkFocusInitial>Ok</button>
+</div>
