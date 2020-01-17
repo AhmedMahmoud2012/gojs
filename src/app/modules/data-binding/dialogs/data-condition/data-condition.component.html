@@ -3,34 +3,34 @@
     <div>
         <mat-form-field appearance="outline">
             <mat-label>Select an input node</mat-label>
-            <mat-select formControlName="input" (selectionChange)="inputChange($event.value)">
+            <mat-select formControlName="nodeId" (selectionChange)="inputChange($event.value)">
                 <mat-option *ngFor="let node of nodes" value="{{node.id}}">{{node.title}}</mat-option>
             </mat-select>
         </mat-form-field>
+        <ng-container *ngIf="conditionForm.controls.nodeId.value">
+            <mat-form-field appearance="outline">
+                <mat-label>Select a column</mat-label>
+                <mat-select formControlName="column">
+                    <mat-option *ngFor="let column of columns" value="{{column}}">{{column}}</mat-option>
+                </mat-select>
+            </mat-form-field>
 
-        <mat-form-field appearance="outline">
-            <mat-label>Select a column</mat-label>
-            <mat-select formControlName="column">
-                <mat-option *ngFor="let column of columns" value="{{column}}">{{column}}</mat-option>
-            </mat-select>
-        </mat-form-field>
+            <mat-form-field appearance="outline">
+                <mat-label>Select an operator</mat-label>
+                <mat-select formControlName="operator" value="==">
+                    <mat-option *ngFor="let operator of operators" value="{{operator.value}}">{{operator.text}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
 
-        <mat-form-field appearance="outline">
-            <mat-label>Select an operator</mat-label>
-            <mat-select formControlName="operator" value="==">
-                <mat-option *ngFor="let operator of operators" value="{{operator.value}}">{{operator.text}}</mat-option>
-            </mat-select>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline">
-            <mat-label>Value</mat-label>
-            <mat-select formControlName="input">
-                <mat-option *ngFor="let node of nodes" value="{{node.id}}">{{node.title}}</mat-option>
-            </mat-select>
-        </mat-form-field>
+            <mat-form-field appearance="outline">
+                <mat-label>Value</mat-label>
+                <input matInput formControlName="value" placeholder="Value">
+            </mat-form-field>
+        </ng-container>
     </div>
 </div>
 <div mat-dialog-actions>
-    <button mat-button (click)="close()">Cancel</button>
-    <button mat-button [mat-dialog-close]="0" cdkFocusInitial>Ok</button>
+    <button mat-button (click)="close()" cdkFocusInitial>Cancel</button>
+    <button mat-button [mat-dialog-close]="0" [disabled]="conditionForm.invalid" (click)="saveCondition()">Save</button>
 </div>

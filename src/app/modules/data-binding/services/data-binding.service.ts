@@ -3,6 +3,7 @@ import { Node, NodeType } from '../types';
 import * as uuid from 'uuid';
 import { MatDialog } from '@angular/material';
 import { DataInputComponent, DataConditionComponent } from '../dialogs';
+import { debounceTime } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -27,8 +28,9 @@ export class DataBindingService {
           width: '450px',
           data: { node, service: this }
         });
-        inputDialogRef.afterClosed().subscribe(_ => {
+        inputDialogRef.afterClosed().pipe(debounceTime(0)).subscribe(_ => {
           this.displayNodeData.emit(node);
+          this.updateGraph.emit(true);
         });
         break;
       case NodeType.OUTPUT:
@@ -40,6 +42,7 @@ export class DataBindingService {
         });
         conditionDialogRef.afterClosed().subscribe(_ => {
           this.displayNodeData.emit(node);
+          this.updateGraph.emit(true);
         })
         break;
     }

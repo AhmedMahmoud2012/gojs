@@ -16,13 +16,13 @@ export class DisplayAreaComponent implements OnInit {
   displayedColumns: string[] = [];
   @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
   constructor(private service: DataBindingService, private dbService: NgxIndexedDBService) {
-    this.dbService.currentStore = 'inputs';
 
   }
 
   ngOnInit() {
     this.subscription.add(this.service.displayNodeData.subscribe((node: Node) => {
-      this.dbService.getByKey(node.id).then(result => {
+      this.dbService.currentStore = 'inputs';
+      this.dbService.getByIndex('nodeId', node.id).then(result => {
         if (result) {
           this.displayedColumns = result.fields;
           this.dataSource = new MatTableDataSource<any>(result.data);

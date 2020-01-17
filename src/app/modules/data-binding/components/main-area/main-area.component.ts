@@ -1,9 +1,10 @@
 import { Component, OnInit, ViewEncapsulation, OnDestroy } from '@angular/core';
-import { Node } from '../../types';
+import { Node, Link } from '../../types';
 import * as go from 'gojs';
 import { DataBindingService } from '../../services';
 import { Subscription } from 'rxjs';
 import { NgxIndexedDBService } from 'ngx-indexed-db';
+import { debounceTime } from 'rxjs/operators';
 @Component({
   selector: 'app-main-area',
   templateUrl: './main-area.component.html',
@@ -12,36 +13,42 @@ import { NgxIndexedDBService } from 'ngx-indexed-db';
 })
 export class MainAreaComponent implements OnInit, OnDestroy {
   public nodes: Array<Node> = [];
-  public links: Array<go.ObjectData> = [];
+  public links: Array<Link> = [];
   subscription: Subscription = new Subscription();
-  public init = this.initDiagram.bind(this);
+  diagram: go.Diagram;
   constructor(private service: DataBindingService, private dbService: NgxIndexedDBService) {
-    this.dbService.currentStore = 'nodes';
-    //this.dbService.clear();
+    this.diagram = this.init();
+    this.initDiagram = this.initDiagram.bind(this);
   }
-  ngOnInit(): void {
-    this.updateGraph();
-    this.subscription.add(this.service.updateGraph.subscribe(_ => {
-      this.updateGraph();
+  async ngOnInit() {
+    this.dbService.currentStore = 'nodes';
+    await this.dbService.clear();
+    await this.updateGraph();
+    this.subscription.add(this.service.updateGraph.pipe(debounceTime(200)).subscribe(async _ => {
+      await this.updateGraph();
     }));
   }
-  ngOnDestroy(): void {
-    this.subscription.unsubscribe();
+
+
+  async updateGraph() {
+    await this.buildNodes();
+    await this.buildLinks();
+    this.diagram.zoomToFit();
   }
 
-  updateGraph() {
-    this.buildNodes();
-  }
-
-  buildNodes() {
+  async buildNodes() {
     this.nodes = [];
-    this.dbService.getAll<Node>().then((nodes: Node[]) => {
-      nodes.sort((a, b) => a.type - b.type).forEach(node => {
-        this.nodes.push(node);
-      })
-    });
+    this.dbService.currentStore = 'nodes';
+    this.nodes = (await this.dbService.getAll<Node>()).sort((a, b) => a.type - b.type);
   }
-  public initDiagram(): go.Diagram {
+
+  async buildLinks() {
+    this.links = [];
+    this.dbService.currentStore = 'links';
+    this.links = await this.dbService.getAll<Link>();
+  }
+
+  public init(): go.Diagram {
     const $ = go.GraphObject.make;
     const dia = $(go.Diagram, {
       'undoManager.isEnabled': true,
@@ -70,7 +77,11 @@ export class MainAreaComponent implements OnInit, OnDestroy {
     return dia;
   }
 
+  public initDiagram(): go.Diagram {
+    return this.diagram;
+  }
 
-
-
+  ngOnDestroy(): void {
+    this.subscription.unsubscribe();
+  }
 }

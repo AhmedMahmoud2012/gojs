@@ -1,6 +1,6 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
-import { DialogNode } from '../../types';
+import { DialogNode, InputDB, Node } from '../../types';
 import * as Papa from 'papaparse';
 import { NgxIndexedDBService } from 'ngx-indexed-db';
 
@@ -13,7 +13,6 @@ export class DataInputComponent implements OnInit {
 
   constructor(public dialogRef: MatDialogRef<DataInputComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogNode, private dbService: NgxIndexedDBService) {
-    this.dbService.currentStore = 'inputs';
   }
 
   ngOnInit() {
@@ -24,14 +23,12 @@ export class DataInputComponent implements OnInit {
       Papa.parse(files[0], {
         header: true,
         skipEmptyLines: true,
-        complete: (result, file) => {
-          console.log(result);
-          this.dbService.update({ id: this.data.node.id, data: result.data, fields: result.meta.fields }).then(
-            () => {
-              this.close();
-            },
-            error => { }
-          );
+        complete: async (result, file) => {
+          this.dbService.currentStore = 'inputs';
+          await this.dbService.update<InputDB>({ id: `i_${this.data.node.id}`, nodeId: this.data.node.id, data: result.data, fields: result.meta.fields })
+          this.dbService.currentStore = 'nodes';
+          await this.dbService.update<Node>({ id: this.data.node.id, color: this.data.node.color, type: this.data.node.type, title: file.name });
+          this.close();
         }
       });
     }

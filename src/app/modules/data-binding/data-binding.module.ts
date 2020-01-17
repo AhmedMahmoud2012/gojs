@@ -9,6 +9,7 @@ import { DataInputComponent, DataConditionComponent } from './dialogs';
 import { NgxIndexedDBModule, DBConfig } from 'ngx-indexed-db';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 
+
 const dbConfig: DBConfig = {
   name: 'data-binding',
   version: 1,
@@ -17,7 +18,18 @@ const dbConfig: DBConfig = {
     storeConfig: { keyPath: 'id', autoIncrement: true },
     storeSchema: [
       { name: 'data', keypath: 'data', options: { unique: false } },
+      { name: 'nodeId', keypath: 'nodeId', options: { unique: false } },
       { name: 'fields', keypath: 'fields', options: { unique: false } }
+    ]
+  },
+  {
+    store: 'conditions',
+    storeConfig: { keyPath: 'id', autoIncrement: true },
+    storeSchema: [
+      { name: 'column', keypath: 'column', options: { unique: false } },
+      { name: 'nodeId', keypath: 'nodeId', options: { unique: false } },
+      { name: 'conditionId', keypath: 'conditionId', options: { unique: false } },
+      { name: 'value', keypath: 'value', options: { unique: false } }
     ]
   },
   {
@@ -33,7 +45,6 @@ const dbConfig: DBConfig = {
     store: 'links',
     storeConfig: { keyPath: 'id', autoIncrement: true },
     storeSchema: [
-      { name: 'key', keypath: 'key', options: { unique: false } },
       { name: 'from', keypath: 'from', options: { unique: false } },
       { name: 'to', keypath: 'to', options: { unique: false } }
     ]

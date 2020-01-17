@@ -14,11 +14,11 @@ export class LeftSideBarComponent implements OnInit, OnDestroy {
 
   subscription: Subscription = new Subscription();
   constructor(private service: DataBindingService, private dbService: NgxIndexedDBService) {
-    this.dbService.currentStore = 'nodes';
-    this.subscription.add(this.service.addNode.subscribe((node: Node) => {
-      this.dbService.add<Node>(node).then(_ => {
-        this.service.updateGraph.emit(true);
-      });
+
+    this.subscription.add(this.service.addNode.subscribe(async (node: Node) => {
+      this.dbService.currentStore = 'nodes';
+      await this.dbService.add<Node>(node);
+      this.service.updateGraph.emit(true);
     }));
   }
 
@@ -26,7 +26,7 @@ export class LeftSideBarComponent implements OnInit, OnDestroy {
   }
 
   addInputNode() {
-    this.service.addNode.emit(this.service.generateNode("Input Node", "#2ecc71", NodeType.INPUT));
+    this.service.addNode.emit(this.service.generateNode("Empty Input Node", "#2ecc71", NodeType.INPUT));
   }
 
   addConditionNode() {
