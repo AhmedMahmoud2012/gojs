@@ -1,0 +1,15 @@
+<h1 mat-dialog-title>Data Output <button mat-button color="warn" (click)="deleteNode()">Delete Node</button></h1>
+<div mat-dialog-content [formGroup]="outputForm">
+    <div>
+        <mat-form-field appearance="outline">
+            <mat-label>Select a Condition node</mat-label>
+            <mat-select formControlName="conditionId">
+                <mat-option *ngFor="let node of nodes" value="{{node.key}}">{{node.title}}</mat-option>
+            </mat-select>
+        </mat-form-field>
+    </div>
+</div>
+<div mat-dialog-actions>
+    <button mat-button (click)="close()" cdkFocusInitial>Cancel</button>
+    <button mat-button [mat-dialog-close]="1" [disabled]="outputForm.invalid" (click)="saveOutput()">Save</button>
+</div>

@@ -1,4 +1,12 @@
-table,mat-paginator {
+table,mat-paginator,.example-button-row  {
     width: 95%;
     margin: 30px auto;
+}
+.example-button-row button {
+  margin-right: 8px;
+}
+
+.example-button-row {
+  display: flex;
+  justify-content: center;
 }

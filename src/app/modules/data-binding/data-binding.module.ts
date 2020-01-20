@@ -8,6 +8,7 @@ import { DataBindingService } from './services';
 import { DataInputComponent, DataConditionComponent } from './dialogs';
 import { NgxIndexedDBModule, DBConfig } from 'ngx-indexed-db';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { DataOutputComponent } from './dialogs/data-output/data-output.component';
 
 
 const dbConfig: DBConfig = {
@@ -34,7 +35,7 @@ const dbConfig: DBConfig = {
   },
   {
     store: 'nodes',
-    storeConfig: { keyPath: 'id', autoIncrement: true },
+    storeConfig: { keyPath: 'key', autoIncrement: true },
     storeSchema: [
       { name: 'title', keypath: 'title', options: { unique: false } },
       { name: 'color', keypath: 'color', options: { unique: false } },
@@ -48,11 +49,18 @@ const dbConfig: DBConfig = {
       { name: 'from', keypath: 'from', options: { unique: false } },
       { name: 'to', keypath: 'to', options: { unique: false } }
     ]
+  },
+  {
+    store: 'output',
+    storeConfig: { keyPath: 'id', autoIncrement: true },
+    storeSchema: [
+      { name: 'conditionId', keypath: 'conditionId', options: { unique: false } },
+    ]
   }
   ]
 };
 @NgModule({
-  declarations: [DataBindingComponent, LeftSideBarComponent, MainAreaComponent, DisplayAreaComponent, DataInputComponent, DataConditionComponent],
+  declarations: [DataBindingComponent, LeftSideBarComponent, MainAreaComponent, DisplayAreaComponent, DataInputComponent, DataConditionComponent, DataOutputComponent],
   imports: [
     SharedModule,
     CommonModule,
@@ -65,7 +73,7 @@ const dbConfig: DBConfig = {
     DataBindingComponent
   ],
   entryComponents: [
-    DataInputComponent, DataConditionComponent
+    DataInputComponent, DataConditionComponent, DataOutputComponent
   ],
   providers: [DataBindingService]
 })

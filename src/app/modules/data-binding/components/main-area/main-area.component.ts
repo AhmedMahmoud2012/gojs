@@ -5,6 +5,7 @@ import { DataBindingService } from '../../services';
 import { Subscription } from 'rxjs';
 import { NgxIndexedDBService } from 'ngx-indexed-db';
 import { debounceTime } from 'rxjs/operators';
+import { DataSyncService } from 'gojs-angular';
 @Component({
   selector: 'app-main-area',
   templateUrl: './main-area.component.html',
@@ -21,8 +22,10 @@ export class MainAreaComponent implements OnInit, OnDestroy {
     this.initDiagram = this.initDiagram.bind(this);
   }
   async ngOnInit() {
-    this.dbService.currentStore = 'nodes';
-    await this.dbService.clear();
+    // this.dbService.currentStore = 'nodes';
+    // await this.dbService.clear();
+    // this.dbService.currentStore = 'links';
+    // await this.dbService.clear();
     await this.updateGraph();
     this.subscription.add(this.service.updateGraph.pipe(debounceTime(200)).subscribe(async _ => {
       await this.updateGraph();
@@ -33,6 +36,7 @@ export class MainAreaComponent implements OnInit, OnDestroy {
   async updateGraph() {
     await this.buildNodes();
     await this.buildLinks();
+    this.diagram.clear();
     this.diagram.zoomToFit();
   }
 
@@ -51,28 +55,45 @@ export class MainAreaComponent implements OnInit, OnDestroy {
   public init(): go.Diagram {
     const $ = go.GraphObject.make;
     const dia = $(go.Diagram, {
-      'undoManager.isEnabled': true,
-      model: $(go.GraphLinksModel,
-        {
-          linkKeyProperty: 'id'
-        }
-      )
+      "animationManager.initialAnimationStyle": go.AnimationManager.None,
+      layout: $(go.TreeLayout,
+        {})
     });
     dia.nodeTemplate =
       $(go.Node, 'Auto',
         {
-          toLinkable: true, fromLinkable: true
+
         },
-        $(go.Shape, 'Rectangle', { stroke: "#000", desiredSize: new go.Size(80, 80) },
+        $(go.Shape, 'RoundedRectangle', { stroke: "#fff", desiredSize: new go.Size(100, 100) },
           new go.Binding('fill', 'color')
         ),
-        $(go.TextBlock, { margin: 8 },
+        $(go.TextBlock, {
+          margin: 8, font: "bold 11px sans-serif", stroke: '#fff', wrap: go.TextBlock.WrapFit,
+          textAlign: "center",
+        },
           new go.Binding('text', 'title'))
       );
-    dia.addDiagramListener("ObjectSingleClicked", (e) => {
+
+    dia.linkTemplate =
+      $(go.Link,
+        {
+          routing: go.Link.AvoidsNodes,
+          corner: 10,
+          curve: go.Link.Bezier
+        },
+        $(go.Shape, { strokeWidth: 3 }),
+        $(go.Shape, { toArrow: "Standard" })
+      );
+    dia.addDiagramListener("ObjectDoubleClicked", (e) => {
       const part = e.subject.part;
       const node: Node = part.data;
       this.service.nodeClicked(node);
+    });
+
+    dia.addDiagramListener("ObjectSingleClicked", (e) => {
+      const part = e.subject.part;
+      const node: Node = part.data;
+      this.service.displayNodeData.emit(node);
     });
     return dia;
   }
@@ -80,6 +101,7 @@ export class MainAreaComponent implements OnInit, OnDestroy {
   public initDiagram(): go.Diagram {
     return this.diagram;
   }
+
 
   ngOnDestroy(): void {
     this.subscription.unsubscribe();

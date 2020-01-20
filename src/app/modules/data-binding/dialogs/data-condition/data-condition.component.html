@@ -1,16 +1,16 @@
-<h1 mat-dialog-title>Data Condition</h1>
+<h1 mat-dialog-title>Data Condition <button mat-button color="warn" (click)="deleteNode()">Delete Node</button></h1>
 <div mat-dialog-content [formGroup]="conditionForm">
     <div>
         <mat-form-field appearance="outline">
             <mat-label>Select an input node</mat-label>
             <mat-select formControlName="nodeId" (selectionChange)="inputChange($event.value)">
-                <mat-option *ngFor="let node of nodes" value="{{node.id}}">{{node.title}}</mat-option>
+                <mat-option *ngFor="let node of nodes" value="{{node.key}}">{{node.title}}</mat-option>
             </mat-select>
         </mat-form-field>
         <ng-container *ngIf="conditionForm.controls.nodeId.value">
             <mat-form-field appearance="outline">
                 <mat-label>Select a column</mat-label>
-                <mat-select formControlName="column">
+                <mat-select formControlName="column" (selectionChange)="columnChange($event.value)">
                     <mat-option *ngFor="let column of columns" value="{{column}}">{{column}}</mat-option>
                 </mat-select>
             </mat-form-field>
@@ -25,12 +25,16 @@
 
             <mat-form-field appearance="outline">
                 <mat-label>Value</mat-label>
-                <input matInput formControlName="value" placeholder="Value">
+                <input matInput formControlName="value" placeholder="Value" [matAutocomplete]="auto">
             </mat-form-field>
+            <mat-autocomplete #auto="matAutocomplete">
+                <mat-option *ngFor="let option of options" [value]="option">{{option}}</mat-option>
+            </mat-autocomplete>
+
         </ng-container>
     </div>
 </div>
 <div mat-dialog-actions>
     <button mat-button (click)="close()" cdkFocusInitial>Cancel</button>
-    <button mat-button [mat-dialog-close]="0" [disabled]="conditionForm.invalid" (click)="saveCondition()">Save</button>
+    <button mat-button [mat-dialog-close]="1" [disabled]="conditionForm.invalid" (click)="saveCondition()">Save</button>
 </div>

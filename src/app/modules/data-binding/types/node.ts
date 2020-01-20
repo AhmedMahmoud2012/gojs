@@ -1,7 +1,7 @@
 import { DataBindingService } from '../services';
 
 export interface Node {
-    id: string;
+    key: string;
     title: string;
     color: string;
     type: NodeType;
@@ -25,7 +25,7 @@ export interface Operator {
 
 export interface InputDB {
     id: string;
-    data: any;
+    data: any[];
     nodeId: string;
     fields: string[];
 }
@@ -36,6 +36,12 @@ export interface ConditionDB {
     value: string;
     nodeId: string;
     operator: string;
+    column: string;
+}
+
+export interface OutputDB {
+    id: string;
+    conditionId: string;
 }
 
 export interface Link {

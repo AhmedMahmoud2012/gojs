@@ -1,3 +1,7 @@
+<div class="example-button-row" *ngIf="node?.type === 2">
+    <button mat-raised-button (click)="exportAsCSV()">Export as CSV</button>
+    <button mat-raised-button color="primary">Send Email</button>
+</div>
 <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
     <ng-container *ngFor="let column of displayedColumns" [matColumnDef]="column">
         <th mat-header-cell *matHeaderCellDef> {{column}} </th>

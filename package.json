@@ -21,6 +21,7 @@
     "@angular/platform-browser": "~8.2.14",
     "@angular/platform-browser-dynamic": "~8.2.14",
     "@angular/router": "~8.2.14",
+    "export-to-csv": "^0.2.1",
     "gojs": "^2.1.5",
     "gojs-angular": "^1.0.1",
     "ngx-indexed-db": "^3.0.15",
